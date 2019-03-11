@@ -103,6 +103,11 @@ client.on('message', message => {
     userData[message.author.id].messagesSent++;
     userData[message.author.id].lastMessage = message.content;
 
+    fs.writeFile('./userData.json', JSON.stringify(userData, null, 4), (err) => {
+      if (err) console.error(err);
+
+    });
+
     /**
      * Creates a user embed of various statistics obtained on that user included (but not limited to):
      * user's pfp, created at, last message, total amount of lines ever typed (soon to be implemented),
