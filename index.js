@@ -14,6 +14,16 @@ const Discord = require('discord.js');
 // Create an instance of a Discord client
 const client = new Discord.Client();
 
+// this is where all of the secret data about the bot goes. not apart of the commit you'll
+// have to make your own JSON file with your token and user id in the same directory
+const config = require('./config.json');
+
+// file system
+var fs = require('fs');
+
+// similar to the config variable, this is the file that has all of your member's data in it
+var userData = JSON.parse(fs.readFileSync('./userData.json', 'utf8'));
+
 /**
  * The ready event is vital, it means that only _after_ this will your bot start reacting to information
  * received from Discord
@@ -24,6 +34,7 @@ client.on('ready', () => {
 
 // Create an event listener for messages
 client.on('message', message => {
+    if (message.author.id == config.botID) return;
 
     // !hi || !hello || !bark
     if (message.content == 'hi' || message.content == 'hello' || message.content == 'bark') {
@@ -33,9 +44,7 @@ client.on('message', message => {
 
     // If the message is "ping"
     if (message.content === 'ping') {
-        // Send "pong" to the same channel
         message.channel.send('pong').catch(console.error);
-
 
     }
 
@@ -55,7 +64,7 @@ client.on('message', message => {
 
     // !no u
     if (message.content == 'no u') {
-        message.channel.send('no u!').catch(console.error);
+        message.channel.send('no u').catch(console.error);
 
     }
 
@@ -86,6 +95,14 @@ client.on('message', message => {
 
     }
 
+    if (!userData[message.author.id]) userData[message.author.id] = {
+      messagesSent: 0,
+      lastMessage: ""
+
+    };
+    userData[message.author.id].messagesSent++;
+    userData[message.author.id].lastMessage = message.content;
+
     /**
      * Creates a user embed of various statistics obtained on that user included (but not limited to):
      * user's pfp, created at, last message, total amount of lines ever typed (soon to be implemented),
@@ -101,8 +118,8 @@ client.on('message', message => {
                 .setTitle('Stats on ' + user.username)
                 .setColor('#6c00f9')
                 .addField('Member since: ', user.createdAt)
-                .addField('Last Message: ', user.lastMessage)
-                .addField('Total Lines:', 'Soon to be implemented.')
+                .addField('Last Message: ', userData[user.id].lastMessage)
+                .addField('Total Lines:', userData[user.id].messagesSent)
                 .addField('Most Active: ', 'Soon to be implemented.')
                 .addField('Currently Playing:', user.presence.game);
             message.channel.send(useremb).catch(console.error);
@@ -133,6 +150,9 @@ client.on('message', message => {
 
     }
 
+    /**
+    * Creates a bot embed with statistics about the bot.
+    */
     function botstats(){
         const botemb = new Discord.RichEmbed()
             .setImage('https://images-ext-1.discordapp.net/external/MMQb0Vu5DMcaGRG3w2miQ_sf85bAt7BEiG8N1R4YIlY/https/images-ext-2.discordapp.net/external/D8ozmmy64ZqzofWD1JTbF6jKqAPDJzjaLtBaPWt9UPg/%253Fsize%253D2048/https/cdn.discordapp.com/avatars/434476424204910592/98ff181fdef6c3f99e94e02cd9dc4f33.png')
@@ -144,21 +164,6 @@ client.on('message', message => {
 
     }
 
-    function createMember(user) {
-         let member = {
-             name: user.username.toString(),
-             date_joined: user.createdAt.toDateString(),
-
-
-
-
-        };
-
-        return member;
-
-    }
-
-
 })
 
-client.login('NDM0NDc2NDI0MjA0OTEwNTky.DsEY6g.CKtNUX9cQtYRWNPhWJpJnH2MvVA').catch(console.error);
+client.login(config.token).catch(console.error);
