@@ -1,6 +1,8 @@
 /**
- * This is LunaBot, or at least the starting of her. I wanted to try and explore learning JavaScript, and since I don't really have a knack
- * for web development, node.js seemed like the next logical place to look. LunaBot is heavily focused on my dog Luna, since I absolutely adore
+ * This is LunaBot, or at least the starting of her. I wanted to try and explore
+ * learning JavaScript, and since I don't really have a knack
+ * for web development, node.js seemed like the next logical place to look.
+ * LunaBot is heavily focused on my dog Luna, since I absolutely adore
  * the vile creature, so many of these commands are dog based. I also really like dogs.
  *
  * I also want to note that a lot of this code is taken from places trying to help people get into Discord.js
@@ -29,7 +31,18 @@ var userData = JSON.parse(fs.readFileSync('./userData.json', 'utf8'));
  * received from Discord
  */
 client.on('ready', () => {
-    console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`);
+    console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels.`);
+    var users = client.users.array();
+    for (var i = 0; i < client.users.size; i++) {
+      // initializes all users except for the bot
+      if (!userData[users[i].id] && users[i].id != config.botID) userData[users[i].id] = {
+          messagesSent: 0,
+          lastMessage: null
+
+      };
+
+    }
+
 });
 
 // Create an event listener for messages
@@ -37,7 +50,7 @@ client.on('message', message => {
     if (message.author.id == config.botID) return;
 
     // !hi || !hello || !bark
-    if (message.content == 'hi' || message.content == 'hello' || message.content == 'bark') {
+    if (message.content === 'hi' || message.content === 'hello' || message.content === 'bark') {
         message.channel.send('Bork!').catch(console.error);
 
     }
@@ -95,11 +108,12 @@ client.on('message', message => {
 
     }
 
-    if (!userData[message.author.id]) userData[message.author.id] = {
-      messagesSent: 0,
-      lastMessage: ""
+    if (!userData[users[i].id] && users[i].id != config.botID) userData[users[i].id] = {
+        messagesSent: 0,
+        lastMessage: null
 
     };
+
     userData[message.author.id].messagesSent++;
     userData[message.author.id].lastMessage = message.content;
 
@@ -163,7 +177,8 @@ client.on('message', message => {
             .setImage('https://images-ext-1.discordapp.net/external/MMQb0Vu5DMcaGRG3w2miQ_sf85bAt7BEiG8N1R4YIlY/https/images-ext-2.discordapp.net/external/D8ozmmy64ZqzofWD1JTbF6jKqAPDJzjaLtBaPWt9UPg/%253Fsize%253D2048/https/cdn.discordapp.com/avatars/434476424204910592/98ff181fdef6c3f99e94e02cd9dc4f33.png')
             .setTitle('LunaBot')
             .setDescription('Luna but in bot form.')
-            .setColor('#6c00f9');
+            .setColor('#6c00f9')
+            .addField('Uptime in seconds', (client.uptime / 1000));
 
         message.channel.send(botemb).catch(console.error);
 
