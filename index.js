@@ -26,6 +26,7 @@ var fs = require('fs');
 // similar to the config variable, this is the file that has all of your member's data in it
 var userData = JSON.parse(fs.readFileSync('./userData.json', 'utf8'));
 
+
 /**
  * The ready event is vital, it means that only _after_ this will your bot start reacting to information
  * received from Discord
@@ -108,7 +109,7 @@ client.on('message', message => {
 
     }
 
-    if (!userData[users[i].id] && users[i].id != config.botID) userData[users[i].id] = {
+    if (!userData[message.author.id]) userData[message.author.id] = {
         messagesSent: 0,
         lastMessage: null
 
