@@ -43,6 +43,8 @@ client.on('ready', () => {
       };
 
     }
+    client.user.setPresence({ game: { name: 'with toys' }, status: 'online' })
+      .catch(console.error);
 
 });
 
@@ -51,8 +53,8 @@ client.on('message', message => {
     if (message.author.id == config.botID) return;
 
     // !hi || !hello || !bark
-    if (message.content === 'hi' || message.content === 'hello' || message.content === 'bark') {
-        message.channel.send('Bork!').catch(console.error);
+    if (message.content === 'hi' || message.content === 'hello' || message.content === 'bark' || message.content === 'luna') {
+        message.channel.send('bork!').catch(console.error);
 
     }
 
@@ -164,7 +166,7 @@ client.on('message', message => {
             .addField('Total Members', memberCount)
             .addField('Number of Channels', channelCount)
             .addField('Most Active', 'Soon to be implemented.')
-            .addField('Least Active', 'Soont to be implemented.');
+            .addField('Least Active', 'Soon to be implemented.');
 
         message.channel.send(servemb).catch(console.error);
 
@@ -174,12 +176,37 @@ client.on('message', message => {
     * Creates a bot embed with statistics about the bot.
     */
     function botstats(){
+      let totalSeconds = (client.uptime / 1000);
+      let days = Math.floor(totalSeconds / 86400);
+      let hours = Math.floor(totalSeconds / 3600);
+      totalSeconds %= 3600;
+      let minutes = Math.floor(totalSeconds / 60);
+      let seconds = Math.floor(totalSeconds % 60);
+      let uptime = `${seconds} seconds`;
+
+
+
+      if (minutes !== 0) {
+        uptime = `${minutes} minutes and ${seconds} seconds`;
+
+      }
+      if (hours !== 0) {
+        uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+
+      }
+      if (days != 0) {
+        uptime = `${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+
+      }
+
+
         const botemb = new Discord.RichEmbed()
             .setImage('https://images-ext-1.discordapp.net/external/MMQb0Vu5DMcaGRG3w2miQ_sf85bAt7BEiG8N1R4YIlY/https/images-ext-2.discordapp.net/external/D8ozmmy64ZqzofWD1JTbF6jKqAPDJzjaLtBaPWt9UPg/%253Fsize%253D2048/https/cdn.discordapp.com/avatars/434476424204910592/98ff181fdef6c3f99e94e02cd9dc4f33.png')
             .setTitle('LunaBot')
             .setDescription('Luna but in bot form.')
             .setColor('#6c00f9')
-            .addField('Uptime in seconds', (client.uptime / 1000));
+            .addField('Uptime', uptime)
+            .addField('Currently', `Playing ${client.user.presence.game}`);
 
         message.channel.send(botemb).catch(console.error);
 
